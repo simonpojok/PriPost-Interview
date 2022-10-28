@@ -45,7 +45,7 @@ export default function HomeScreen({navigation}: HomeScreenProps) {
   };
 
   const handleMakeScreenClicked = () => {
-    navigation.navigate('ScanDocument', {postBox: selectedPostBox});
+    navigation.navigate('ScannedDocument', {postBox: selectedPostBox});
   };
 
   const PostBoxRenderItem: ListRenderItem<PostBox> = ({item}) => {
