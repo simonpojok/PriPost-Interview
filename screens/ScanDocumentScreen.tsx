@@ -3,15 +3,20 @@ import {
   FlatList,
   Image,
   ListRenderItem,
+  Pressable,
   SafeAreaView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
 import {Camera, PhotoFile, useCameraDevices} from 'react-native-vision-camera';
-import {Button} from 'react-native-paper';
+import {Button, Title} from 'react-native-paper';
 
-export default function ScanDocumentScreen() {
+interface ScanDocumentScreen {
+  navigation: any;
+}
+
+export default function ScanDocumentScreen({navigation}: ScanDocumentScreen) {
   const camera = useRef<Camera>(null);
   const devices = useCameraDevices('wide-angle-camera');
   const [documentImages, setDocumentImages] = useState<Array<PhotoFile>>([]);
@@ -19,9 +24,7 @@ export default function ScanDocumentScreen() {
 
   useEffect(() => {
     Camera.requestCameraPermission()
-      .then(permissions => {
-        console.log('PERMISSIONS', permissions);
-      })
+      .then(() => {})
       .catch(error => {
         console.log('Error', error);
       });
@@ -36,7 +39,6 @@ export default function ScanDocumentScreen() {
         })
         .then(photo => {
           setDocumentImages(prevState => [...prevState, photo]);
-          console.log('PHOTO', photo);
         })
         .catch(error => console.log(error));
     }
@@ -51,15 +53,29 @@ export default function ScanDocumentScreen() {
   }
 
   const DocumentImageItem: ListRenderItem<PhotoFile> = ({item}) => {
+    const onDocumentClickedHandler = () => {
+      navigation.push('EditDocument', {document: item});
+    };
     const imageUrl = `file://${item.path}`;
     return (
-      <Image
-        source={{uri: imageUrl}}
-        style={styles.capturedImageItem}
-        resizeMethod="scale"
-      />
+      <Pressable onPress={onDocumentClickedHandler}>
+        <View style={styles.capturedImageItemContainer}>
+          <Image
+            style={styles.capturedImage}
+            resizeMethod="scale"
+            source={{uri: imageUrl}}
+          />
+          <Title>{documentImages.indexOf(item) + 1}</Title>
+        </View>
+      </Pressable>
     );
   };
+
+  if (camera !== null && camera.current !== null) {
+    // @ts-ignore
+    console.log('Camera Status', camera.current);
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.screenContainer}>
@@ -122,10 +138,17 @@ const styles = StyleSheet.create({
   imageContainers: {
     backgroundColor: '#000',
   },
-  capturedImageItem: {
+  capturedImageItemContainer: {
     height: 100,
     width: 100,
     borderColor: '#000',
     borderWidth: 2,
+  },
+  capturedImage: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });
