@@ -1,7 +1,7 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import DocumentScanScreen from './screens/DocumentScanScreen';
+import ScanDocumentScreen from './screens/ScanDocumentScreen';
 import HomeScreen from './screens/HomeScreen';
 
 const Stack = createNativeStackNavigator();
@@ -11,7 +11,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="ScanDocument" component={DocumentScanScreen} />
+        <Stack.Screen name="ScanDocument" component={ScanDocumentScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

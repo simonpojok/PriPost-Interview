@@ -5,7 +5,7 @@ import PostBox from '../types/PostBox';
 
 const POST_BOXES_URL = `${Config.BASE_URL}/api/admin/v1/pripost/letters/postboxes`;
 
-export default function usePostBoxes() {
+export default function () {
   const [postBoxes, setPostBoxes] = useState<Array<PostBox>>([]);
   const [isPostBoxLoading, setIsPostBoxLoading] = useState(false);
   const [postBoxError, setPostBoxError] = useState({});
