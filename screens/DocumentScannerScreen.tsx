@@ -12,11 +12,13 @@ import {
 import {Camera, PhotoFile, useCameraDevices} from 'react-native-vision-camera';
 import {Button, Title} from 'react-native-paper';
 
-interface ScanDocumentScreen {
+interface DocumentScannerScreen {
   navigation: any;
 }
 
-export default function ScanDocumentScreen({navigation}: ScanDocumentScreen) {
+export default function DocumentScannerScreen({
+  navigation,
+}: DocumentScannerScreen) {
   const camera = useRef<Camera>(null);
   const devices = useCameraDevices('wide-angle-camera');
   const [documentImages, setDocumentImages] = useState<Array<PhotoFile>>([]);
