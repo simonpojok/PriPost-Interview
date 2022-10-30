@@ -24,7 +24,9 @@ interface DocumentScannerScreen {
   navigation: any;
 }
 
-export default function DocumentScannerScreen({}: DocumentScannerScreen) {
+export default function DocumentScannerScreen({
+  navigation,
+}: DocumentScannerScreen) {
   const camera = useRef<Camera>(null);
   const devices = useCameraDevices('wide-angle-camera');
   const device = devices.back;
@@ -97,7 +99,7 @@ export default function DocumentScannerScreen({}: DocumentScannerScreen) {
   const documentSideName = documentImages.length === 0 ? 'Front' : 'Back';
 
   const handleScanDocumentComplete: VoidFunction = () => {
-    // dispatch()
+    navigation.goBack();
   };
 
   return (
