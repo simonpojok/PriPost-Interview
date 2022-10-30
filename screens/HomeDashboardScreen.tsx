@@ -21,7 +21,7 @@ interface HomeScreenProps {
   navigation: any;
 }
 
-export default function HomeScreen({navigation}: HomeScreenProps) {
+export default function HomeDashboardScreen({navigation}: HomeScreenProps) {
   const {postBoxes} = usePostBoxes();
   const [postBoxType, setPostBoxType] = useState<PostBoxType>(PostBoxType.NONE);
   const [userEnteredPostBoxName, setUserEnteredPostBoxName] = useState('');
