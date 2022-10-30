@@ -16,6 +16,10 @@ import Themes from '../themes';
 import {Button, Title} from 'react-native-paper';
 import PostContentTypeActionCard from '../components/PostContentTypeActionCard';
 import {PostBoxType} from '../types/PostBoxType';
+import {useDispatch, useSelector} from 'react-redux';
+import {SharedState} from '../types/SharedState';
+import {updateSelectedPostBoxType} from '../redux/actions/postBoxAction';
+import RouteNames from './RouteNames';
 
 interface HomeScreenProps {
   navigation: any;
@@ -23,16 +27,21 @@ interface HomeScreenProps {
 
 export default function HomeDashboardScreen({navigation}: HomeScreenProps) {
   const {postBoxes} = usePostBoxes();
-  const [postBoxType, setPostBoxType] = useState<PostBoxType>(PostBoxType.NONE);
   const [userEnteredPostBoxName, setUserEnteredPostBoxName] = useState('');
   const [selectedPostBox, setSelectedPostBox] = useState<PostBox | null>(null);
 
+  // Redux ---
+  const dispatch = useDispatch();
+  const {postBoxType}: any = useSelector(
+    (state: SharedState) => state.postBoxType,
+  );
+
   const handleEnvelopePostBoxTypeSelected = () => {
-    setPostBoxType(PostBoxType.ENVELOP);
+    dispatch(updateSelectedPostBoxType(PostBoxType.ENVELOP));
   };
 
   const handleContentPostBoxTypeSelected = () => {
-    setPostBoxType(PostBoxType.CONTENT);
+    dispatch(updateSelectedPostBoxType(PostBoxType.CONTENT));
   };
 
   const handlePostBoxNameChanged = async (postBoxName: string) => {
@@ -40,7 +49,9 @@ export default function HomeDashboardScreen({navigation}: HomeScreenProps) {
   };
 
   const handleMakeScreenClicked = () => {
-    navigation.navigate('DocumentsScreen', {postBox: selectedPostBox});
+    navigation.navigate(RouteNames.DOCUMENTS_SCREEN, {
+      postBox: selectedPostBox,
+    });
   };
 
   const PostBoxRenderItem: ListRenderItem<PostBox> = ({item}) => {

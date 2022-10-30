@@ -1,4 +1,4 @@
-import React, {ReactNode} from 'react';
+import React, {ReactElement, ReactNode} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import HomeDashboardScreen from './screens/HomeDashboardScreen';
@@ -14,7 +14,9 @@ interface NavigationConfiguration {
   children: ReactNode;
 }
 
-const NavigationConfiguration = ({children}: NavigationConfiguration) => {
+const NavigationConfiguration: (
+  props: NavigationConfiguration,
+) => ReactElement = ({children}) => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={RouteNames.HOME_NAME}>
