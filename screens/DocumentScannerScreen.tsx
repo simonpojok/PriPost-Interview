@@ -55,9 +55,7 @@ export default function DocumentScannerScreen({
   }
 
   const DocumentImageItem: ListRenderItem<PhotoFile> = ({item}) => {
-    const onDocumentClickedHandler = () => {
-      navigation.push('EditDocument', {document: item});
-    };
+    const onDocumentClickedHandler = () => {};
     const imageUrl = `file://${item.path}`;
     return (
       <Pressable onPress={onDocumentClickedHandler}>

@@ -15,12 +15,7 @@ import usePostBoxes from '../actions/usePostBoxes';
 import Themes from '../themes';
 import {Button, Title} from 'react-native-paper';
 import PostContentTypeActionCard from '../components/PostContentTypeActionCard';
-
-enum PostBoxType {
-  CONTENT,
-  ENVELOP,
-  NONE,
-}
+import {PostBoxType} from '../types/PostBoxType';
 
 interface HomeScreenProps {
   navigation: any;
@@ -45,7 +40,7 @@ export default function HomeScreen({navigation}: HomeScreenProps) {
   };
 
   const handleMakeScreenClicked = () => {
-    navigation.navigate('ScanDocument', {postBox: selectedPostBox});
+    navigation.navigate('DocumentsScreen', {postBox: selectedPostBox});
   };
 
   const PostBoxRenderItem: ListRenderItem<PostBox> = ({item}) => {
