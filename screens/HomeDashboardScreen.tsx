@@ -5,15 +5,13 @@ import {
   Pressable,
   SafeAreaView,
   StyleSheet,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import PostBox from '../types/PostBox';
 import usePostBoxes from '../actions/usePostBoxes';
 import Themes from '../themes';
-import {Button, Title} from 'react-native-paper';
+import {Button, TextInput, Title} from 'react-native-paper';
 import PostContentTypeActionCard from '../components/PostContentTypeActionCard';
 import {PostBoxType} from '../types/PostBoxType';
 import {useDispatch, useSelector} from 'react-redux';
@@ -105,7 +103,7 @@ export default function HomeDashboardScreen({navigation}: HomeScreenProps) {
             />
           </View>
           <View>
-            <Text style={styles.postBoxNameText}>Search Post Boxes</Text>
+            <Title style={styles.postBoxNameText}>Search Post Boxes</Title>
             <TextInput
               placeholder="Type Post Box Name.."
               value={userEnteredPostBoxName}
@@ -120,13 +118,18 @@ export default function HomeDashboardScreen({navigation}: HomeScreenProps) {
               showsVerticalScrollIndicator={false}
             />
             {selectedPostBox && (
-              <View style={styles.selectedPostBox}>
-                <Title
-                  style={[styles.postBoxListItem, styles.selectedPostBoxLabel]}>
-                  {selectedPostBox.full_number}
-                </Title>
-                <EvilIcons name="check" size={24} color="#fff" />
-              </View>
+              <Pressable onPress={() => setSelectedPostBox(null)}>
+                <View style={styles.selectedPostBox}>
+                  <Title
+                    style={[
+                      styles.postBoxListItem,
+                      styles.selectedPostBoxLabel,
+                    ]}>
+                    {selectedPostBox.full_number}
+                  </Title>
+                  <EvilIcons name="check" size={24} color="#fff" />
+                </View>
+              </Pressable>
             )}
           </View>
         </View>
