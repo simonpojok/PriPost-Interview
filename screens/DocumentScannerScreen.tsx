@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   FlatList,
   Image,
@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import {Camera, useCameraDevices} from 'react-native-vision-camera';
+import {Camera, PhotoFile, useCameraDevices} from 'react-native-vision-camera';
 import {Button, Title} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import {SharedState} from '../types/SharedState';
@@ -19,17 +19,31 @@ import EmptyView from '../components/EmptyView';
 import {VoidFunction} from '../types/function/VoidFunction';
 import {AddDocumentActionCreator} from '../redux/actions/documentAction';
 import {ScannedDocument} from '../types/ScannedDocumentState';
+import DocumentPreview from '../components/DocumentPreview';
+import ImageEditor from '@react-native-community/image-editor';
 
 interface DocumentScannerScreen {
   navigation: any;
+  route: any;
+}
+
+export enum DocumentScanningType {
+  RE_SCAN_ONE_DOCUMENT,
+  SCAN_DOCUMENTS,
+  SCAN_TWO_DOCUMENTS,
 }
 
 export default function DocumentScannerScreen({
   navigation,
+  route,
 }: DocumentScannerScreen) {
   const camera = useRef<Camera>(null);
   const devices = useCameraDevices('wide-angle-camera');
+  const [photoFile, setPhotoFile] = useState<PhotoFile | null>(null);
   const device = devices.back;
+
+  // Navigation
+  const {documentPath, scanType} = route.params;
 
   // Redux
   const dispatch = useDispatch();
@@ -64,10 +78,15 @@ export default function DocumentScannerScreen({
             editedDocument: null,
           });
           dispatch(addDocumentAction);
+          setPhotoFile(photo);
         })
         .catch(error => console.log(error));
     }
   }
+
+  // Handlers
+  const onScanNextDocumentAction: VoidFunction = () => setPhotoFile(null);
+  const handleScanDocumentComplete: VoidFunction = () => navigation.goBack();
 
   if (device == null) {
     return (
@@ -77,80 +96,65 @@ export default function DocumentScannerScreen({
     );
   }
 
-  const DocumentImageItem: ListRenderItem<ScannedDocument> = ({item}) => {
-    console.log('Rendering ============', item);
-    const onDocumentClickedHandler = () => {};
-    const imageUrl = `file://${item.photoFile.path}`;
-    return (
-      <Pressable onPress={onDocumentClickedHandler}>
-        <View style={styles.capturedImageItemContainer}>
-          <Image
-            style={styles.capturedImage}
-            resizeMethod="scale"
-            source={{uri: imageUrl}}
-          />
-          <Title>{documentImages.length + 1}</Title>
-        </View>
-      </Pressable>
-    );
-  };
-
   const isPageSideIndicatorVisible = postBoxType === PostBoxType.ENVELOP;
   const documentSideName = documentImages.length === 0 ? 'Front' : 'Back';
 
-  const handleScanDocumentComplete: VoidFunction = () => {
-    navigation.goBack();
+  console.log(documentPath, scanType);
+
+  const DocumentImageScanner: () => JSX.Element = () => {
+    return (
+      <View style={styles.cameraContainer}>
+        <Camera
+          ref={camera}
+          device={device}
+          isActive={true}
+          photo={true}
+          style={styles.camera}
+        />
+        <View style={[styles.camera, styles.cameraOverlay]}>
+          {isPageSideIndicatorVisible ? (
+            <View style={styles.documentSideIndicator}>
+              <Title style={styles.documentIndicatorText}>
+                {documentSideName}
+              </Title>
+            </View>
+          ) : (
+            <EmptyView />
+          )}
+
+          <View style={styles.cameraActionsContainer}>
+            <Button
+              style={styles.captureImage}
+              icon="camera"
+              mode="contained"
+              onPress={handleScanDocumentInFocus}>
+              Capture
+            </Button>
+
+            <Button
+              style={styles.captureImage}
+              mode="contained"
+              onPress={handleScanDocumentComplete}>
+              Done
+            </Button>
+          </View>
+        </View>
+      </View>
+    );
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.screenContainer}>
-        <View style={styles.cameraContainer}>
-          <Camera
-            ref={camera}
-            device={device}
-            isActive={true}
-            photo={true}
-            style={styles.camera}
+        {photoFile ? (
+          <DocumentPreview
+            photoFile={photoFile}
+            onDocumentScanDone={handleScanDocumentComplete}
+            onScanNextDocumentAction={onScanNextDocumentAction}
           />
-          <View style={[styles.camera, styles.cameraOverlay]}>
-            {isPageSideIndicatorVisible ? (
-              <View style={styles.documentSideIndicator}>
-                <Title style={styles.documentIndicatorText}>
-                  {documentSideName}
-                </Title>
-              </View>
-            ) : (
-              <EmptyView />
-            )}
-
-            <View style={styles.cameraActionsContainer}>
-              <Button
-                style={styles.captureImage}
-                icon="camera"
-                mode="contained"
-                onPress={handleScanDocumentInFocus}>
-                Capture
-              </Button>
-
-              <Button
-                style={styles.captureImage}
-                mode="contained"
-                onPress={handleScanDocumentComplete}>
-                Done
-              </Button>
-            </View>
-          </View>
-        </View>
-        <View style={styles.imageContainers}>
-          <FlatList
-            data={documentImages}
-            renderItem={DocumentImageItem}
-            keyExtractor={item => item.photoFile.path}
-            scrollEnabled={true}
-            horizontal={true}
-          />
-        </View>
+        ) : (
+          <DocumentImageScanner />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -215,5 +219,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+  },
+  documentImage: {
+    flex: 1,
   },
 });
