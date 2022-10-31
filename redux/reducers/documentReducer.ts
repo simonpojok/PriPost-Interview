@@ -18,8 +18,14 @@ export default function documentReducer(
       };
     case ScannedDocumentActionType.REPLACE_SCANNED_DOCUMENT: {
       const documents = state.documents.map(document => {
-        if (document.photoFile.path === action.path) {
-          action.path = null;
+        console.log(
+          'TEST',
+          document.photoFile.path === action.payload.path,
+          document,
+          action.payload,
+        );
+        if (document.photoFile.path === action.payload.path) {
+          // action.payload.path = null;
           return action.payload;
         }
         return document;

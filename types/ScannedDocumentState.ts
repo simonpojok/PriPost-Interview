@@ -5,6 +5,7 @@ export interface ScannedDocumentState {
 }
 
 export interface ScannedDocument {
+  path: string | null;
   photoFile: PhotoFile;
   editedDocument: any;
 }

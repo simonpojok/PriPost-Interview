@@ -48,6 +48,8 @@ export default function DocumentsScreen({navigation}: DocumentsScreenProps) {
     });
   };
 
+  console.log('Documents', documents);
+
   const Content =
     documents.length === 0 ? (
       <EmptyDocumentSection

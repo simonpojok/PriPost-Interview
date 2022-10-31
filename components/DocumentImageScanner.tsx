@@ -44,16 +44,18 @@ export default function DocumentImageScanner({
       oldPhotoFilePath !== null &&
       oldPhotoFilePath !== EMPTY_DOCUMENT_PATH
     ) {
-      dispatch(
-        ReplaceDocumentActionCreator(oldPhotoFilePath, {
-          photoFile: photoFile,
-          editedDocument: null,
-        }),
-      );
+      // dispatch(
+      //   ReplaceDocumentActionCreator(oldPhotoFilePath, {
+      //     photoFile: photoFile,
+      //     editedDocument: null,
+      //     path: null,
+      //   }),
+      // );
     } else {
       const addDocumentAction = AddDocumentActionCreator({
         photoFile: photoFile,
         editedDocument: null,
+        path: null,
       });
       dispatch(addDocumentAction);
     }
