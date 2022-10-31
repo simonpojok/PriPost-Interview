@@ -6,6 +6,9 @@ import {SharedState} from '../types/SharedState';
 import DocumentListSection from '../components/DocumentListSection';
 import RouteNames from './RouteNames';
 import {ScannedDocument} from '../types/ScannedDocumentState';
+import {DocumentScanningType} from './DocumentScannerScreen';
+
+export const EMPTY_DOCUMENT_PATH: string = '';
 
 interface DocumentsScreenProps {
   navigation: any;
@@ -22,10 +25,13 @@ export default function DocumentsScreen({navigation}: DocumentsScreenProps) {
     (state: SharedState) => state.scannedDocuments,
   );
 
-  // Effects
+  // Effectss
   useEffect(() => {
     if (documents.length === 0) {
-      navigation.navigate(RouteNames.DOCUMENT_SCANNER);
+      navigation.navigate(RouteNames.DOCUMENT_SCANNER, {
+        scanType: DocumentScanningType.SCAN_DOCUMENTS,
+        documentPath: EMPTY_DOCUMENT_PATH,
+      });
     }
   }, [documents, navigation]);
 
