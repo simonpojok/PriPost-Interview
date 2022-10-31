@@ -10,3 +10,16 @@ export const AddDocumentActionCreator: (
     payload: document,
   };
 };
+
+export const ReplaceDocumentActionCreator = (
+  path: string,
+  document: ScannedDocument,
+) => {
+  return {
+    type: ScannedDocumentActionType.REPLACE_SCANNED_DOCUMENT,
+    payload: {
+      path: path,
+      document,
+    },
+  };
+};

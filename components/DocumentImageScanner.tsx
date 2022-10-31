@@ -2,16 +2,24 @@ import React, {useRef} from 'react';
 import {Button, StyleSheet, View} from 'react-native';
 import {Camera, PhotoFile, useCameraDevices} from 'react-native-vision-camera';
 import {VoidFunction} from '../types/function/VoidFunction';
-import {AddDocumentActionCreator} from '../redux/actions/documentAction';
+import {
+  AddDocumentActionCreator,
+  ReplaceDocumentActionCreator,
+} from '../redux/actions/documentAction';
 import {useDispatch} from 'react-redux';
-import {Title} from 'react-native-paper';
+import EmptyView from './EmptyView';
+import {EMPTY_DOCUMENT_PATH} from '../screens/DocumentsScreen';
 
 interface DocumentImageScannerProps {
   setCapturePhotoFile: (photoFile: PhotoFile) => void;
+  isRescanningDocument: boolean;
+  oldPhotoFilePath: string | null;
 }
 
 export default function DocumentImageScanner({
   setCapturePhotoFile,
+  isRescanningDocument,
+  oldPhotoFilePath,
 }: DocumentImageScannerProps) {
   const camera = useRef<Camera>(null);
   const devices = useCameraDevices('wide-angle-camera');
@@ -21,30 +29,40 @@ export default function DocumentImageScanner({
   const dispatch = useDispatch();
 
   const handleScanDocumentInFocus: VoidFunction = () => {
-    if (camera !== null) {
-      // @ts-ignore
-      camera.current
-        .takePhoto({
-          flash: 'on',
-        })
-        .then(photo => {
-          const addDocumentAction = AddDocumentActionCreator({
-            photoFile: photo,
-            editedDocument: null,
-          });
-          dispatch(addDocumentAction);
-          setCapturePhotoFile(photo);
-        })
-        .catch(error => console.log(error));
+    camera.current
+      ?.takePhoto()
+      .then(handleDocumentScannedSuccessfully)
+      .catch(error => console.log(error));
+  };
+
+  // Handlers
+  const handleDocumentScannedSuccessfully: (
+    photoFile: PhotoFile,
+  ) => void = photoFile => {
+    if (
+      isRescanningDocument &&
+      oldPhotoFilePath !== null &&
+      oldPhotoFilePath !== EMPTY_DOCUMENT_PATH
+    ) {
+      dispatch(
+        ReplaceDocumentActionCreator(oldPhotoFilePath, {
+          photoFile: photoFile,
+          editedDocument: null,
+        }),
+      );
+    } else {
+      const addDocumentAction = AddDocumentActionCreator({
+        photoFile: photoFile,
+        editedDocument: null,
+      });
+      dispatch(addDocumentAction);
     }
+
+    setCapturePhotoFile(photoFile);
   };
 
   if (device == null) {
-    return (
-      <View style={styles.cameraNotFound}>
-        <Title>No Camera Found</Title>
-      </View>
-    );
+    return <EmptyView />;
   }
 
   return (
@@ -56,8 +74,10 @@ export default function DocumentImageScanner({
         photo={true}
         style={styles.camera}
       />
-      <View>
-        <Button title="Capture" onPress={handleScanDocumentInFocus} />
+      <View style={styles.buttonContainer}>
+        <View>
+          <Button title="Capture" onPress={handleScanDocumentInFocus} />
+        </View>
       </View>
     </View>
   );
@@ -78,5 +98,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  buttonContainer: {
+    padding: 10,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });

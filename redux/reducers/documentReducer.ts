@@ -16,10 +16,14 @@ export default function documentReducer(
         ...state,
         documents: [...state.documents, action.payload],
       };
-    case ScannedDocumentActionType.REMOVE_SCANNED_DOCUMENT: {
-      const documents = state.documents.filter(
-        document => document.photoFile.path !== action.payload.photoFile.path,
-      );
+    case ScannedDocumentActionType.REPLACE_SCANNED_DOCUMENT: {
+      const documents = state.documents.map(document => {
+        if (document.photoFile.path === action.path) {
+          action.path = null;
+          return action.payload;
+        }
+        return document;
+      });
       return {...state, documents: documents};
     }
 

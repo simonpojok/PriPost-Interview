@@ -4,6 +4,7 @@ import {Camera, PhotoFile} from 'react-native-vision-camera';
 import {VoidFunction} from '../types/function/VoidFunction';
 import DocumentPreview from '../components/DocumentPreview';
 import DocumentImageScanner from '../components/DocumentImageScanner';
+import {EMPTY_DOCUMENT_PATH} from './DocumentsScreen';
 
 interface DocumentScannerScreen {
   navigation: any;
@@ -18,8 +19,12 @@ export enum DocumentScanningType {
 
 export default function DocumentScannerScreen({
   navigation,
+  route,
 }: DocumentScannerScreen) {
   const [photoFile, setPhotoFile] = useState<PhotoFile | null>(null);
+
+  // Navigation
+  const {documentPath, scanType} = route.params;
 
   // Effects
   useEffect(() => {
@@ -34,6 +39,9 @@ export default function DocumentScannerScreen({
   const onScanNextDocumentAction: VoidFunction = () => setPhotoFile(null);
   const handleScanDocumentComplete: VoidFunction = () => navigation.goBack();
 
+  const isRescanningDocument = documentPath !== EMPTY_DOCUMENT_PATH;
+  console.log(scanType);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.screenContainer}>
@@ -44,7 +52,11 @@ export default function DocumentScannerScreen({
             onScanNextDocumentAction={onScanNextDocumentAction}
           />
         ) : (
-          <DocumentImageScanner setCapturePhotoFile={setPhotoFile} />
+          <DocumentImageScanner
+            setCapturePhotoFile={setPhotoFile}
+            isRescanningDocument={isRescanningDocument}
+            oldPhotoFilePath={documentPath}
+          />
         )}
       </View>
     </SafeAreaView>
