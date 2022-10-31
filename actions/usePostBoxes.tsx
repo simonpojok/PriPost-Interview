@@ -17,7 +17,6 @@ export default function usePostBoxes() {
     axios({
       method: 'GET',
       url: POST_BOXES_URL,
-      timeout: 10000,
       headers: {
         Authorization: Config.AUTHORIZATION_BEARER_TOKEN,
         Accept: 'application/json',
