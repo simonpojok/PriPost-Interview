@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {Button, SafeAreaView, StyleSheet, View} from 'react-native';
 import EmptyDocumentSection from '../components/EmptyDocumentSection';
 import {useSelector} from 'react-redux';
 import {SharedState} from '../types/SharedState';
@@ -7,6 +7,8 @@ import DocumentListSection from '../components/DocumentListSection';
 import RouteNames from './RouteNames';
 import {ScannedDocument} from '../types/ScannedDocumentState';
 import {DocumentScanningType} from './DocumentScannerScreen';
+import {Title} from 'react-native-paper';
+import {VoidFunction} from '../types/function/VoidFunction';
 
 export const EMPTY_DOCUMENT_PATH: string = '';
 
@@ -48,6 +50,8 @@ export default function DocumentsScreen({navigation}: DocumentsScreenProps) {
     });
   };
 
+  const handleCompressToPDFAndUpload: VoidFunction = () => {};
+
   console.log('Documents', documents);
 
   const Content =
@@ -64,7 +68,13 @@ export default function DocumentsScreen({navigation}: DocumentsScreenProps) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.safeArea}>{Content}</View>
+      <View style={{flex: 1, padding: 10}}>
+        <Title>POST BOX Number</Title>
+        <View style={styles.safeArea}>{Content}</View>
+        <View style={styles.uploadButtonContainer}>
+          <Button title="Upload" onPress={handleCompressToPDFAndUpload} />
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
@@ -78,4 +88,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  uploadButtonContainer: {},
 });
