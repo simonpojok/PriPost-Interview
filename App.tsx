@@ -6,7 +6,42 @@ import DocumentEditorScreen from './screens/DocumentEditorScreen';
 import DocumentsScreen from './screens/DocumentsScreen';
 import DocumentScannerScreen from './screens/DocumentScannerScreen';
 import PriPostAppConfigurationProps from './components/PriPostAppConfiguration';
+import {logger as ReactNativeLogger} from 'react-native-logs';
 import RouteNames from './screens/RouteNames';
+import axios from 'axios';
+
+const logger = ReactNativeLogger.createLogger({
+  printDate: true,
+  transportOptions: {
+    colors: {
+      info: 'blueBright',
+      warn: 'yellowBright',
+      error: 'redBright',
+    },
+  },
+});
+
+axios.interceptors.request.use(
+  function (config) {
+    logger.debug(config);
+    return config;
+  },
+  function (error) {
+    logger.error(error);
+    return Promise.reject(error);
+  },
+);
+
+axios.interceptors.response.use(
+  function (response) {
+    logger.info(response);
+    return response;
+  },
+  function (error) {
+    logger.error(error);
+    return Promise.reject(error);
+  },
+);
 
 const Stack = createNativeStackNavigator();
 

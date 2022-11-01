@@ -66,9 +66,17 @@ export default function DocumentsScreen({navigation}: DocumentsScreenProps) {
     };
     console.log('OPTIONS', options);
     RNImageToPdf.createPDFbyImages(options)
-      .then((pdf: any) => uploadPostDocument(pdf))
+      .then((pdf: any) => {
+        uploadPostDocument(pdf.path);
+        resetState();
+      })
+      .then(resetState)
       .catch((error: any) => console.log('ERROR OCURRED', error))
       .finally(() => console.log('DONE'));
+  };
+
+  const resetState = () => {
+    console.log('RESETTING_STATES ===========');
   };
 
   console.log('Documents', documents);

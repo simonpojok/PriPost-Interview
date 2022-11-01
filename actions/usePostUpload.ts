@@ -1,5 +1,4 @@
 import {useState} from 'react';
-import * as RNFS from 'react-native-fs';
 import axios from 'axios';
 import Config from '../config';
 
@@ -10,7 +9,6 @@ export enum PostUploadStatus {
   UPLOADING,
   UPLOAD_SUCCESS,
   UPLOAD_ERROR,
-  READING_FILE,
 }
 
 export default function usePostUpload() {
@@ -19,43 +17,30 @@ export default function usePostUpload() {
   );
 
   const uploadPostDocument = (path: string) => {
-    setPostUploadStatus(PostUploadStatus.READING_FILE);
-    // @ts-ignore
-    RNFS.readFile(path.filePath, 'ascii')
-      .then(response => {
-        setPostUploadStatus(PostUploadStatus.UPLOADING);
-        handUploadFile(response);
-      })
-      .catch(error => console.log('Error Reading', error))
-      .finally(() => console.log('Reading Files'));
-  };
+    setPostUploadStatus(PostUploadStatus.UPLOADING);
+    let formData = new FormData();
+    formData.append('file', {uri: path, name: 'content', type: 'pdf'});
+    formData.append('postbox_id', 1);
+    formData.append('location_id', 1);
+    formData.append('type', 'CON');
 
-  const handUploadFile = (pdfFile: any) => {
     axios({
       method: 'POST',
       url: POST_UPLOAD_URL,
       headers: {
         Authorization: Config.AUTHORIZATION_BEARER_TOKEN,
         Accept: 'application/json',
+        'Content-Type': 'multipart/form-data',
       },
-      data: {
-        postbox_id: 1,
-        location_id: 1,
-        type: 'CON',
-        file: pdfFile,
-      },
+      data: formData,
     })
-      .then(response => {
+      .then(_ => {
         setPostUploadStatus(PostUploadStatus.UPLOAD_SUCCESS);
-        console.log('UPLOAD-FILE-RESPONSE', response);
       })
-      .catch(error => {
+      .catch(_ => {
         setPostUploadStatus(PostUploadStatus.UPLOAD_ERROR);
-        console.log('UPLOAD-FILE-ERROR', error);
-      })
-      .finally(() => {
-        console.log('FILE-UPLOAD-DONE');
       });
   };
+
   return {postUploadStatus, uploadPostDocument};
 }
