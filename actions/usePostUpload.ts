@@ -1,6 +1,7 @@
 import {useState} from 'react';
-import axios from 'axios';
 import Config from '../config';
+import {logger} from '../App';
+import RNFS, {UploadFileItem} from 'react-native-fs';
 
 const POST_UPLOAD_URL = `${Config.BASE_URL}/api/admin/v1/pripost/letters/upload`;
 
@@ -18,27 +19,45 @@ export default function usePostUpload() {
 
   const uploadPostDocument = (path: string) => {
     setPostUploadStatus(PostUploadStatus.UPLOADING);
-    let formData = new FormData();
-    formData.append('file', {uri: path, name: 'content', type: 'pdf'});
-    formData.append('postbox_id', 1);
-    formData.append('location_id', 1);
-    formData.append('type', 'CON');
+    logger.info('FILE_PATH', path);
+    const files: Array<UploadFileItem> = [
+      {
+        name: 'post_document',
+        filename: 'post_document.pdf',
+        filepath: path,
+        filetype: 'application/pdf',
+      },
+    ];
 
-    axios({
+    RNFS.uploadFiles({
+      toUrl: POST_UPLOAD_URL,
+      files: files,
       method: 'POST',
-      url: POST_UPLOAD_URL,
       headers: {
         Authorization: Config.AUTHORIZATION_BEARER_TOKEN,
         Accept: 'application/json',
-        'Content-Type': 'multipart/form-data',
       },
-      data: formData,
+      fields: {
+        location_id: '1',
+        postbox_id: '1',
+        type: 'CON',
+      },
+      begin: () => {
+        logger.info('Begging upload');
+      },
+      progress: data => {
+        logger.info(
+          'Uploading File',
+          data.totalBytesExpectedToSend,
+          data.totalBytesSent,
+        );
+      },
     })
-      .then(_ => {
-        setPostUploadStatus(PostUploadStatus.UPLOAD_SUCCESS);
+      .promise.then(response => {
+        logger.debug('UPLOAD RESPONSE', response);
       })
-      .catch(_ => {
-        setPostUploadStatus(PostUploadStatus.UPLOAD_ERROR);
+      .catch(error => {
+        logger.error('ERROR DURING UPLOAD', error);
       });
   };
 

@@ -10,7 +10,7 @@ import {logger as ReactNativeLogger} from 'react-native-logs';
 import RouteNames from './screens/RouteNames';
 import axios from 'axios';
 
-const logger = ReactNativeLogger.createLogger({
+export const logger = ReactNativeLogger.createLogger({
   printDate: true,
   transportOptions: {
     colors: {

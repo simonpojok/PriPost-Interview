@@ -12,6 +12,8 @@ import {VoidFunction} from '../types/function/VoidFunction';
 // @ts-ignore
 import RNImageToPdf from 'react-native-image-to-pdf';
 import usePostUpload from '../actions/usePostUpload';
+import {DocumentDirectoryPath, moveFile} from 'react-native-fs';
+import {logger} from '../App';
 
 export const EMPTY_DOCUMENT_PATH: string = '';
 
@@ -55,6 +57,7 @@ export default function DocumentsScreen({navigation}: DocumentsScreenProps) {
   };
 
   const handleCompressToPDFAndUpload: VoidFunction = () => {
+    console.log('====================================================');
     const options = {
       imagePaths: documents.map(document => document.photoFile.path),
       name: 'post_documents.pdf',
@@ -67,8 +70,18 @@ export default function DocumentsScreen({navigation}: DocumentsScreenProps) {
     console.log('OPTIONS', options);
     RNImageToPdf.createPDFbyImages(options)
       .then((pdf: any) => {
-        uploadPostDocument(pdf.path);
-        resetState();
+        const documentUri = `${DocumentDirectoryPath}/post_document.pdf`;
+        moveFile(`file://${pdf.filePath}`, documentUri)
+          .then(() => {
+            logger.info(
+              'FILE MOVED SUCCESSFULLY  ================',
+              documentUri,
+            );
+            uploadPostDocument(documentUri);
+          })
+          .catch(error => {
+            logger.error('FILE-MOVE-ERROR', documentUri, error);
+          });
       })
       .then(resetState)
       .catch((error: any) => console.log('ERROR OCURRED', error))
