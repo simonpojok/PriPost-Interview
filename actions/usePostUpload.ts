@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import Config from '../config';
 import {logger} from '../App';
-import RNFS, {UploadFileItem} from 'react-native-fs';
+import RNFS, {readFile, UploadFileItem} from 'react-native-fs';
 
 const POST_UPLOAD_URL = `${Config.BASE_URL}/api/admin/v1/pripost/letters/upload`;
 
@@ -20,10 +20,13 @@ export default function usePostUpload() {
   const uploadPostDocument = (path: string) => {
     setPostUploadStatus(PostUploadStatus.UPLOADING);
     logger.info('FILE_PATH', path);
+    readFile(path)
+      .then(response => logger.info(response))
+      .catch(error => logger.error(error));
     const files: Array<UploadFileItem> = [
       {
-        name: 'post_document',
-        filename: 'post_document.pdf',
+        name: 'camera_scanned_document',
+        filename: 'camera_scanned_document.pdf',
         filepath: path,
         filetype: 'application/pdf',
       },

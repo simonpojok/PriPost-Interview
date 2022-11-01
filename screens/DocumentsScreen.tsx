@@ -60,7 +60,7 @@ export default function DocumentsScreen({navigation}: DocumentsScreenProps) {
     console.log('====================================================');
     const options = {
       imagePaths: documents.map(document => document.photoFile.path),
-      name: 'post_documents.pdf',
+      name: 'camera_scanned_document.pdf',
       quality: 7,
       maxSize: {
         width: 900,
@@ -70,7 +70,8 @@ export default function DocumentsScreen({navigation}: DocumentsScreenProps) {
     console.log('OPTIONS', options);
     RNImageToPdf.createPDFbyImages(options)
       .then((pdf: any) => {
-        const documentUri = `${DocumentDirectoryPath}/post_document.pdf`;
+        const documentUri = `${DocumentDirectoryPath}/cameras`;
+        uploadPostDocument(`file://${pdf.filePath}`);
         moveFile(`file://${pdf.filePath}`, documentUri)
           .then(() => {
             logger.info(
