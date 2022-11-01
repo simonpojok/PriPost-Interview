@@ -9,6 +9,9 @@ import {ScannedDocument} from '../types/ScannedDocumentState';
 import {DocumentScanningType} from './DocumentScannerScreen';
 import {Title} from 'react-native-paper';
 import {VoidFunction} from '../types/function/VoidFunction';
+// @ts-ignore
+import RNImageToPdf from 'react-native-image-to-pdf';
+import usePostUpload from '../actions/usePostUpload';
 
 export const EMPTY_DOCUMENT_PATH: string = '';
 
@@ -21,6 +24,7 @@ interface ScannedDocumentSelectorProps {
 }
 
 export default function DocumentsScreen({navigation}: DocumentsScreenProps) {
+  const {postUploadStatus, uploadPostDocument} = usePostUpload();
   // redux
   // @ts-ignore
   const {documents}: ScannedDocumentSelectorProps = useSelector(
@@ -50,7 +54,22 @@ export default function DocumentsScreen({navigation}: DocumentsScreenProps) {
     });
   };
 
-  const handleCompressToPDFAndUpload: VoidFunction = () => {};
+  const handleCompressToPDFAndUpload: VoidFunction = () => {
+    const options = {
+      imagePaths: documents.map(document => document.photoFile.path),
+      name: 'post_documents.pdf',
+      quality: 7,
+      maxSize: {
+        width: 900,
+        height: 800,
+      },
+    };
+    console.log('OPTIONS', options);
+    RNImageToPdf.createPDFbyImages(options)
+      .then((pdf: any) => uploadPostDocument(pdf))
+      .catch((error: any) => console.log('ERROR OCURRED', error))
+      .finally(() => console.log('DONE'));
+  };
 
   console.log('Documents', documents);
 
